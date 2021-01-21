@@ -7,51 +7,56 @@ import data.hts.hts as hts
 This stage cleans the regional HTS.
 """
 
+
 def configure(context):
     context.stage("data.hts.egt.raw")
+
 
 INCOME_CLASS_BOUNDS = [800, 1200, 1600, 2000, 2400, 3000, 3500, 4500, 5500, 1e6]
 
 PURPOSE_MAP = {
-    "home" : [1, 2, 3] + [34, 35],
-    "work" : [11, 12, 13, 14],
-    "leisure" : [15, 16, 17] + [41, 42, 43, 44, 45, 46, 47],
-    "education" : [21, 22, 23, 24, 25, 26, 27],
-    "shop" : [31, 32, 33],
-    "other" : [50, 51, 52, 53, 54, 55] + [61, 62, 63, 64] + [98]
+    "home": [1, 2, 3] + [34, 35],  # 34 and 35 not in EGT?
+    "work": [11, 12, 13, 14],
+    "leisure": [15, 16, 17] + [41, 42, 43, 44, 45, 46, 47],
+    "education": [21, 22, 23, 24, 25, 26, 27],
+    "shop": [31, 32, 33],
+    "other": [50, 51, 52, 53, 54, 55] + [61, 62, 63, 64] + [98]
 }
 
+# MOT_H9
 PURPOSE_MAP = {
-    1 : "home",
-    2 : "work",
-    3 : "work",
-    4 : "education",
-    5 : "shop",
-    6 : "other",
-    7 : "other",
-    8 : "leisure"
+    1: "home",
+    2: "work",
+    3: "work",
+    4: "education",
+    5: "shop",
+    6: "other",
+    7: "other",
+    8: "leisure"
     # 9 : "other" # default
 }
 
+# MODP_H7
 MODES_MAP = {
-    1 : "pt",
-    2 : "car",
-    3 : "car_passenger",
-    4 : "car",
-    5 : "bike",
-    #6 : "pt", # default (other)
-    7 : "walk"
+    1: "pt",
+    2: "car",
+    3: "car_passenger",
+    4: "car",
+    5: "bike",
+    # 6 : "pt", # default (other)
+    7: "walk"
 }
+
 
 def execute(context):
     df_households, df_persons, df_trips = context.stage("data.hts.egt.raw")
 
     # Make copies
-    df_households = pd.DataFrame(df_households, copy = True)
-    df_persons = pd.DataFrame(df_persons, copy = True)
-    df_trips = pd.DataFrame(df_trips, copy = True)
+    df_households = pd.DataFrame(df_households, copy=True)
+    df_persons = pd.DataFrame(df_persons, copy=True)
+    df_trips = pd.DataFrame(df_trips, copy=True)
 
-    # Transform original IDs to integer (they are hierarchichal)
+    # Transform original IDs to integer (they are hierarchical)
     df_households["egt_household_id"] = df_households["NQUEST"].astype(np.int)
     df_persons["egt_person_id"] = df_persons["NP"].astype(np.int)
     df_persons["egt_household_id"] = df_persons["NQUEST"].astype(np.int)
@@ -64,13 +69,13 @@ def execute(context):
 
     df_persons = pd.merge(
         df_persons, df_households[["egt_household_id", "household_id"]],
-        on = "egt_household_id"
+        on="egt_household_id"
     )
     df_persons["person_id"] = np.arange(len(df_persons))
 
     df_trips = pd.merge(
         df_trips, df_persons[["egt_person_id", "egt_household_id", "person_id", "household_id"]],
-        on = ["egt_person_id", "egt_household_id"]
+        on=["egt_person_id", "egt_household_id"]
     )
     df_trips["trip_id"] = np.arange(len(df_trips))
 
@@ -153,8 +158,8 @@ def execute(context):
 
     # Add weight to trips
     df_trips = pd.merge(
-        df_trips, df_persons[["person_id", "person_weight"]], on = "person_id", how = "left"
-    ).rename(columns = { "person_weight": "trip_weight" })
+        df_trips, df_persons[["person_id", "person_weight"]], on="person_id", how="left"
+    ).rename(columns={"person_weight": "trip_weight"})
     df_persons["trip_weight"] = df_persons["person_weight"]
 
     # Chain length
@@ -167,7 +172,7 @@ def execute(context):
 
     # Calculate consumption units
     hts.check_household_size(df_households, df_persons)
-    df_households = pd.merge(df_households, hts.calculate_consumption_units(df_persons), on = "household_id")
+    df_households = pd.merge(df_households, hts.calculate_consumption_units(df_persons), on="household_id")
 
     # Socioprofessional class
     df_persons["socioprofessional_class"] = df_persons["CS8"].fillna(8).astype(int)
@@ -193,8 +198,9 @@ def execute(context):
 
     return df_households, df_persons, df_trips
 
+
 def calculate_income_class(df):
     assert "household_income" in df
     assert "consumption_units" in df
 
-    return np.digitize(df["household_income"] / df["consumption_units"], INCOME_CLASS_BOUNDS, right = True)
+    return np.digitize(df["household_income"] / df["consumption_units"], INCOME_CLASS_BOUNDS, right=True)

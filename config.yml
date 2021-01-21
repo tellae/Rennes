@@ -1,4 +1,4 @@
-## Synthetic population pipeline for Île-de-France
+## Synthetic population pipeline for Rennes Metropolis
 ## based on the synpp package
 
 # This is the path to a directory where the pipeline can store temporary data
@@ -15,15 +15,18 @@ config:
   processes: 4
 
   # Define whether to use ENTD or EGT as the household travel survey (HTS)
-  hts: entd
+  hts: emc2
 
   # Define sampling rate and random seed for the output population
-  sampling_rate: 0.001
+  sampling_rate: 1
   random_seed: 1234
-
+  regions: [53]
+  census_path: rp_2015/FD_INDCVIZC_2015.dbf
+  departments: [35]
+  
   # Paths to the input data and where the output should be stored
-  data_path: /path/to/my/data
-  output_path: output
+  data_path: /home/valentin/data/EQASIM/data
+  output_path: /home/valentin/data/EQASIM/output
 
   # Only interesting if you run the simulation
   java_memory: 14G
