@@ -120,17 +120,16 @@ The enterprise census of France is available on data.gouv.fr:
 - [Enterprise census](https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/)
 - Scroll down and click on **Sirene : Fichier StockEtablissement**. Behind the name you will see a month as the file is updated monthly.
 - In the popping up window, click on **Telecharger** to download the file (it is rather large, at least one GB)
-- Open the downloaded *zip* file and copy the file `StockEtablissement_utf8.csv` into `data/sirene`. Unpacked it has a size of around 5GB.
+- Move the downloaded *zip* file `StockEtablissement_utf8.csv` into `data/sirene`.
 
 ### 10) Address database (BD-TOPO)
 
 The French address database is available from IGN:
 
 - [Address database](https://geoservices.ign.fr/documentation/diffusion/telechargement-donnees-libres.html#bd-topo)
-- After opening the link, scroll down past all the *Département X* entries until you see *BD TOPO® Adresse par territoire édition Juin 2020*
-- Click on the download link under *France métropolitaine*
-- Open the downloaded archive and copy the files `ADRESSE.*` in *shape file* format
-into `data/bdtopo`. The unpacked files have a size of around 30GB!
+- After opening the link, scroll down until you see *BD TOPO® Décembre 2020 Tous Thèmes par région édition Décembre 2020 format shapefile*
+- Click on the download link under *Région Île-de-France - R 11*
+- Open the downloaded archive and copy the files `ADRESSE.*` from the folder `ADDRESSES` in *shape file* format into `data/bdtopo`.
 
 ### Overview
 

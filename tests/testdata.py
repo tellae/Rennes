@@ -416,10 +416,18 @@ def create(output_path):
             purpose = 21 if studies else 11
             mode = random.choice([1, 2, 3, 5, 7])
 
+            origin_hour = 8
+            origin_minute = 0
+
+            if person_index % 100 == 0:
+                # Testing proper diffusion of plan times
+                orign_hour = 0
+                origin_minute = 12
+
             data["trips"].append(dict(
                 NQUEST = household_id, NP = person_id,
                 ND = 1, ORDEP = home_department, DESTDEP = work_department,
-                ORH = 8, ORM = 0, DESTH = 9, DESTM = 0, ORCOMM = home_municipality,
+                ORH = origin_hour, ORM = origin_minute, DESTH = 9, DESTM = 0, ORCOMM = home_municipality,
                 DESTCOMM = work_municipality, DPORTEE = 3, MODP_H7 = 2,
                 DESTMOT_H9 = purpose, ORMOT_H9 = 1
             ))
@@ -609,7 +617,7 @@ def create(output_path):
     df_sirene["typeVoieEtablissement"] = "RUE"
 
     os.mkdir("%s/sirene" % output_path)
-    df_sirene.to_csv("%s/sirene/StockEtablissement_utf8.csv" % output_path, index = False)
+    df_sirene.to_csv("%s/sirene/StockEtablissement_utf8.zip" % output_path, index = False)
 
     # Data set: OSM
     # We add add a road grid of 500m
