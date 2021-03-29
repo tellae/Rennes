@@ -189,7 +189,7 @@ def execute(context):
     df_target["any_cars"] = df_target["number_of_vehicles"] > 0
     df_source["any_cars"] = df_source["number_of_vehicles"] > 0
 
-    columns = ["sex", "any_cars", "age_class", "socioprofessional_class", "income_class", "departement_id"]
+    columns = ["sex", "any_cars", "age_class", "socioprofessional_class"]
 
     # Perform statistical matching
     df_source = df_source.rename(columns={"person_id": "hts_id"})

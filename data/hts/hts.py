@@ -20,7 +20,7 @@ def fix_trip_times(df_trips):
     - Current trip is after following trip:
         - Following trip may be on the next day
 
-    - Intresecting trips
+    - Intersecting trips
     """
     columns = ["trip_id", "person_id", "departure_time", "arrival_time", "preceding_purpose", "following_purpose", "is_first_trip", "is_last_trip"]
     df_main = df_trips
@@ -29,7 +29,7 @@ def fix_trip_times(df_trips):
 
     # 1) Negative trip durations
     f_negative = df_main["departure_time"] > df_main["arrival_time"]
-    print("Found %d occurences with negative duration" % np.count_nonzero(f_negative))
+    print("Found %d occurrences with negative duration" % np.count_nonzero(f_negative))
 
     # 1.1) Departure and arrival time may have been swapped, and chain is consistent
     f_swap = np.copy(f_negative)
@@ -75,7 +75,7 @@ def fix_trip_times(df_trips):
         if shifted_count > 0:
             print("  Shifted %d trips in round %d" % (shifted_count, round))
         else:
-            print("  No more occurences where current trip is after the next")
+            print("  No more occurrences where current trip is after the next")
 
     df_next = df_main.shift(-1)
     df_previous = df_main.shift(1)
@@ -83,7 +83,7 @@ def fix_trip_times(df_trips):
     # Intersecting trips
     f = ~df_main["is_last_trip"]
     f &= df_main["arrival_time"] > df_next["departure_time"]
-    print("Found %d occurences where current trip ends after next trip starts" % np.count_nonzero(f))
+    print("Found %d occurrences where current trip ends after next trip starts" % np.count_nonzero(f))
 
     f &= df_main["departure_time"] <= df_next["departure_time"]
     print("  of which we're able to shorten %d to make it consistent" % np.count_nonzero(f))
@@ -93,7 +93,7 @@ def fix_trip_times(df_trips):
     f = ~df_main["is_last_trip"]
     f &= df_main["departure_time"] >= df_next["departure_time"]
     f &= df_main["arrival_time"] <= df_next["arrival_time"]
-    print("Found %d occurences where current trip is included in next trip" % np.count_nonzero(f))
+    print("Found %d occurrences where current trip is included in next trip" % np.count_nonzero(f))
     df_main = df_main[~f]
 
     return df_main
@@ -175,12 +175,10 @@ def fix_activity_types(df_trips):
     check_activity_types(df_trips)
 
 def check_activity_types(df_trips):
-    f  = (df_trips["following_purpose"] != df_trips["preceding_purpose"].shift(-1)) & ~df_trips["is_last_trip"]
+    f = (df_trips["following_purpose"] != df_trips["preceding_purpose"].shift(-1)) & ~df_trips["is_last_trip"]
     f |= (df_trips["following_purpose"].shift(1) != df_trips["preceding_purpose"]) & ~df_trips["is_first_trip"]
-
     error_count = np.count_nonzero(f)
     print("Trips with inconsistent activity types: %d" % error_count)
-
     return error_count == 0
 
 def compute_first_last(df_trips):

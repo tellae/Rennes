@@ -32,23 +32,27 @@ def execute(context):
         "%s/emc2/03A_EM~1.csv" % context.config("data_path"),
         sep=",", usecols=MENAGES_COLUMNS
     )
+    df_menages['ZFM'] = df_menages['ZFM'].map(lambda x: str(x).zfill(6))
+    df_menages['ECH'] = df_menages['ECH'].map(lambda x: str(x).zfill(4))
     df_menages['MID'] = df_menages['ZFM'] + df_menages['ECH']
 
-    df_personnes = pd.read_csv(
-        "%s/emc2/03B_EM~1.csv" % context.config("data_path"),
-        sep=",", usecols=PERSONNES_COLUMNS
-    )
+    assert len(df_menages) == len(df_menages['MID'].unique())
 
     df_personnes = pd.read_csv(
         "%s/emc2/03B_EM~1.csv" % context.config("data_path"),
         sep=",", usecols=PERSONNES_COLUMNS
     )
+    df_personnes['ZFP'] = df_personnes['ZFP'].map(lambda x: str(x).zfill(6))
+    df_personnes['ECH'] = df_personnes['ECH'].map(lambda x: str(x).zfill(4))
     df_personnes['MID'] = df_personnes['ZFP'] + df_personnes['ECH']
+    assert len(df_menages) == len(df_personnes['MID'].unique())
 
     df_deplacements = pd.read_csv(
         "%s/emc2/03C_EM~1.csv" % context.config("data_path"),
         sep=",", usecols=DEPLACEMENTS_COLUMNS
     )
+    df_deplacements['ZFD'] = df_deplacements['ZFD'].map(lambda x: str(x).zfill(6))
+    df_deplacements['ECH'] = df_deplacements['ECH'].map(lambda x: str(x).zfill(4))
     df_deplacements['MID'] = df_deplacements['ZFD'] + df_deplacements['ECH']
 
     return df_menages, df_personnes, df_deplacements
@@ -57,7 +61,7 @@ def execute(context):
 def validate(context):
     for name in ("03A_EM~1.csv", "03B_EM~1.csv", "03C_EM~1.csv"):
         if not os.path.exists("%s/emc2/%s" % (context.config("data_path"), name)):
-            raise RuntimeError("File missing from EGT: %s" % name)
+            raise RuntimeError("File missing from EMC²: %s" % name)
 
     return [
         os.path.getsize("%s/emc2/03A_EM~1.csv" % context.config("data_path")),
